@@ -173,7 +173,7 @@ void XdpDump::load() {
 
   auto fnSize = bpf_->function_size(funcName_);
   auto bpfLogBuf = std::make_unique<char[]>(kBpfLogBufSize);
-  progFd_ = bpf_prog_load(BPF_PROG_TYPE_XDP, funcName_.c_str(),
+  progFd_ = bcc_prog_load(BPF_PROG_TYPE_XDP, funcName_.c_str(),
                           reinterpret_cast<struct bpf_insn *>(fnStart), fnSize,
                           bpf_->license(), bpf_->kern_version(),
                           0 /* log_level */, bpfLogBuf.get(), kBpfLogBufSize);

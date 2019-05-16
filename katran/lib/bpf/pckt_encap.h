@@ -54,9 +54,9 @@ static inline bool encap_v6(struct xdp_md *xdp, struct ctl_value *cval,
   new_eth = data;
   ip6h = data + sizeof(struct eth_hdr);
   old_eth = data + sizeof(struct ipv6hdr);
-  if (new_eth + 1 > data_end ||
-      old_eth + 1 > data_end ||
-      ip6h + 1 > data_end) {
+  if (new_eth + 1 > (struct eth_hdr *)data_end ||
+      old_eth + 1 > (struct eth_hdr *)data_end ||
+      ip6h + 1 > (struct ipv6hdr *)data_end) {
     return false;
   }
   memcpy(new_eth->eth_dest, cval->mac, 6);
@@ -110,9 +110,9 @@ static inline bool encap_v4(struct xdp_md *xdp, struct ctl_value *cval,
   new_eth = data;
   iph = data + sizeof(struct eth_hdr);
   old_eth = data + sizeof(struct iphdr);
-  if (new_eth + 1 > data_end ||
-      old_eth + 1 > data_end ||
-      iph + 1 > data_end) {
+  if (new_eth + 1 > (struct eth_hdr *)data_end ||
+      old_eth + 1 > (struct eth_hdr *)data_end ||
+      iph + 1 > (struct iphdr *)data_end) {
     return false;
   }
   memcpy(new_eth->eth_dest, cval->mac, 6);

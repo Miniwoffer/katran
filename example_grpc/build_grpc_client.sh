@@ -18,9 +18,9 @@
 set -xeo pipefail
 
 create_grpc_template () {
-rm -rf goclient/src/katranc/lb_katran
-mkdir -p goclient/src/katranc/lb_katran
-protoc -I protos/ protos/katran.proto --go_out=plugins=grpc:goclient/src/katranc/lb_katran
+	rm -rf goclient/src/katranc/lb_katran
+	mkdir -p goclient/src/katranc/lb_katran
+	protoc -I protos/ protos/katran.proto --go_out=plugins=grpc:goclient/src/katranc/lb_katran
 }
 
 get_goclient_deps() {

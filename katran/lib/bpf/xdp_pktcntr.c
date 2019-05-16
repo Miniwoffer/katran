@@ -47,8 +47,6 @@ struct bpf_map_def SEC("maps") cntrs_array = {
 
 SEC("xdp-pktcntr")
 int pktcntr(struct xdp_md *ctx) {
-  void *data_end = (void *)(long)ctx->data_end;
-  void *data = (void *)(long)ctx->data;
   __u32 ctl_flag_pos = 0;
   __u32 cntr_pos = 0;
   __u32* flag = bpf_map_lookup_elem(&ctl_array, &ctl_flag_pos);

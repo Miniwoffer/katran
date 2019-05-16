@@ -14,7 +14,7 @@ find_library(CARES libcares.a cares PATHS ${CARES_LIBRARIES_PATH} NO_DEFAULT_PAT
 find_library(GRPC_UNSECURE libgrpc_unsecure.a grpc_unsecure PATHS ${GRPC_LIBRARIES_PATH} NO_DEFAULT_PATH)
 find_library(LIBIBERTY libiberty.a iberty)
 find_library(DL dl)
-find_library(EVENT libevent.a event)
+find_library(EVENT libevent.so event)
 find_package(Protobuf REQUIRED)
 
 set(PROTO_PATH "${CMAKE_SOURCE_DIR}/example_grpc/protos")
@@ -57,7 +57,7 @@ add_library(katran_service_handler
 target_link_libraries(katran_service_handler
   katranlb
   mac_helpers
-  "${FOLLY}"
+  "${Folly_LIBRARIES}"
 )
 
 add_library(grpc_signal_handler
@@ -66,7 +66,7 @@ add_library(grpc_signal_handler
 )
 
 target_link_libraries(grpc_signal_handler
-    "${FOLLY}"
+    "${Folly_LIBRARIES}"
     "${DL}"
     "${EVENT}"
     "${GRPC++}"
@@ -78,17 +78,17 @@ target_link_libraries(grpc_signal_handler
 add_executable(katran_server_grpc katran_server.cpp)
 target_link_libraries(katran_server_grpc
   "-Wl,--start-group"
-  "${LIBUNWIND}"
-  "${LIBLZMA}"
+  "${Libunwind_LIBRARIES}"
+  "${LibLZMA_LIBRARIES}"
   "${PROTOBUF}"
   "${GRPC++}"
   "${GPR}"
   "${ADDR_SORT}"
   "${CARES}"
-  "${FOLLY}"
-  "${GLOG}"
-  "${GFLAGS}"
-  "${PTHREAD}"
+  "${Folly_LIBRARIES}"
+  "${Glog_LIBRARIES}"
+  "${GFlags_LIBRARIES}"
+  Threads::Threads
   "${LIBDC}"
   "${DL}"
   "${LIBIBERTY}"

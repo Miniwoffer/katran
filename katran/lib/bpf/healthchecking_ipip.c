@@ -54,7 +54,6 @@ struct bpf_map_def SEC("maps") hc_reals_map = {
 SEC("cls-hc")
 int healthchecker(struct __sk_buff *skb)
 {
-  int ret = 0;
   int tun_flag = 0;
   __u32 ifindex;
   __u32 somark = skb->mark;

@@ -118,8 +118,8 @@ static inline int send_icmp4_too_big(struct xdp_md *xdp) {
   if (bpf_xdp_adjust_head(xdp, 0 - headroom)) {
     return XDP_DROP;
   }
-  void *data = xdp->data;
-  void *data_end = xdp->data_end;
+  void *data = (void *)(size_t)xdp->data;
+  void *data_end = (void *)(size_t)xdp->data_end;
   if (data + (ICMP_TOOBIG_SIZE + headroom) > data_end) {
     return XDP_DROP;
   }
@@ -163,8 +163,8 @@ static inline int send_icmp6_too_big(struct xdp_md *xdp) {
   if (bpf_xdp_adjust_head(xdp, 0 - headroom)) {
     return XDP_DROP;
   }
-  void *data = xdp->data;
-  void *data_end = xdp->data_end;
+  void *data = (void *)(size_t)xdp->data;
+  void *data_end = (void *)(size_t)xdp->data_end;
   if (data + (ICMP6_TOOBIG_SIZE + headroom) > data_end) {
     return XDP_DROP;
   }
@@ -225,7 +225,7 @@ static inline int parse_icmpv6(void *data, void *data_end, __u64 off,
   struct icmp6hdr *icmp_hdr;
   struct ipv6hdr *ip6h;
   icmp_hdr = data + off;
-  if (icmp_hdr + 1 > data_end) {
+  if (icmp_hdr + 1 > (struct icmp6hdr *)data_end) {
     return XDP_DROP;
   }
   if (icmp_hdr->icmp6_type == ICMPV6_ECHO_REQUEST) {
@@ -239,7 +239,7 @@ static inline int parse_icmpv6(void *data, void *data_end, __u64 off,
   // data partition of icmp 'pkt too big' contains header (and as much data as
   // as possible) of the packet, which has trigered this icmp.
   ip6h = data + off;
-  if (ip6h + 1 > data_end) {
+  if (ip6h + 1 > (struct ipv6hdr *)data_end) {
     return XDP_DROP;
   }
   pckt->flow.proto = ip6h->nexthdr;
@@ -255,7 +255,7 @@ static inline int parse_icmp(void *data, void *data_end, __u64 off,
   struct icmphdr *icmp_hdr;
   struct iphdr *iph;
   icmp_hdr = data + off;
-  if (icmp_hdr + 1 > data_end) {
+  if (icmp_hdr + 1 > (struct icmphdr *)data_end) {
     return XDP_DROP;
   }
   if (icmp_hdr->type == ICMP_ECHO) {
@@ -266,7 +266,7 @@ static inline int parse_icmp(void *data, void *data_end, __u64 off,
   }
   off += sizeof(struct icmphdr);
   iph = data + off;
-  if (iph + 1 > data_end) {
+  if (iph + 1 > (struct iphdr *)data_end) {
     return XDP_DROP;
   }
   if (iph->ihl != 5) {

@@ -16,6 +16,7 @@
  # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 set -xeo pipefail
+INSTALER="yay -Sy --noconfirm --needed "
 NCPUS=$(cat /proc/cpuinfo  | grep processor | wc -l)
 ROOT_DIR=$(pwd)
 DEPS_DIR="${ROOT_DIR}/deps"
@@ -37,15 +38,14 @@ fi
 mkdir deps || true
 
 get_dev_tools() {
-    sudo apt-get update
-    sudo apt-get install -y \
-        build-essential \
-        cmake \
-        libbison-dev \
-        bison \
-        flex \
-        bc \
-        libbpfcc-dev
+    $INSTALER \
+		clang \
+		cmake \
+		bison \
+		flex \
+		bc \
+		bcc
+	echo lol
 }
 
 get_folly() {
@@ -53,30 +53,30 @@ get_folly() {
         return
     fi
     rm -rf deps/folly
-	sudo apt-get install -y \
-		g++ \
+	$INSTALER \
+		gcc \
 		automake \
 		autoconf \
 		autoconf-archive \
 		libtool \
-		libboost-all-dev \
-		libevent-dev \
-		libdouble-conversion-dev \
-		libgoogle-glog-dev \
-		libgflags-dev \
-		liblz4-dev \
-		liblzma-dev \
-		libsnappy-dev \
+		boost \
+		libevent \
+		double-conversion \
+		google-glog \
+		gflags \
+		lz4 \
+		lzma \
+		snappy \
 		make \
-		zlib1g-dev \
-		binutils-dev \
-		libjemalloc-dev \
-		libssl-dev \
+		zlib \
+		binutils \
+		jemalloc \
+		openssl \
 		pkg-config \
-    	libiberty-dev \
-        libunwind8-dev \
-        libdwarf-dev
-
+		libunwind \
+		libdwarf
+#
+#		libiberty \
     pushd .
 	cd deps
 	git clone https://github.com/facebook/folly --depth 1
@@ -88,30 +88,15 @@ get_folly() {
   touch deps/folly_installed
 }
 
-get_clang() {
-    if [ -f "deps/clang_installed" ]; then
-        return
-    fi
-    rm -rf deps/clang
-    pushd .
-    cd deps
-    mkdir clang
-    cd clang
-    wget http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-    tar xvf ./clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-    popd
-    touch deps/clang_installed
-}
-
 get_required_libs() {
-    sudo apt-get install -y \
-        libgoogle-glog-dev \
-        libgflags-dev \
-        libelf-dev \
-        libmnl-dev \
-        liblzma-dev \
-        libre2-dev
-    sudo apt-get install -y libsodium-dev
+	echo "get_required_libs()"
+    $INSTALER \
+        gflags \
+        libelf \
+        libmnl \
+        lzma \
+        re2 \
+        libsodium
 }
 
 get_gtest() {
@@ -238,7 +223,7 @@ get_grpc() {
     fi
     GO_INSTALLED=$(which go || true)
     if [ -z "$GO_INSTALLED" ]; then
-        sudo apt-get install -y golang
+        $INSTALER golang
     fi
     rm -rf deps/grpc
     pushd .
@@ -246,13 +231,23 @@ get_grpc() {
     git clone  --depth 1 https://github.com/grpc/grpc
     cd grpc
     git submodule update --init
-    mkdir build
+	
+	cd third_party/boringssl
+	git checkout origin
+	cd ../../
+	
+	mkdir build
     cd build
-    cmake ..
+    cmake .. -DgRPC_BUILD_CSHARP_EXT=OFF -DgRPC_BUILD_TESTS=OFF
     make -j $NCPUS
     sudo make install
+
     cd ../third_party/protobuf
-    make && sudo make install
+	./autogen.sh
+	./configure
+	make -j $NCPUS
+	#make check
+	sudo make install
     popd
     touch deps/grpc_installed
 }
@@ -312,7 +307,7 @@ build_katran() {
     cmake ..
     make -j $NCPUS
     popd
-     ./build_bpf_modules_opensource.sh 2>/dev/null
+     ./build_bpf_modules_opensource.sh 
 }
 
 test_katran() {
@@ -325,11 +320,10 @@ test_katran() {
 }
 
 get_dev_tools
-get_folly
-get_clang
+# get_folly
 get_required_libs
-get_gtest
-get_libbpf
+#get_gtest
+#get_libbpf
 if [ "$BUILD_EXAMPLE_THRIFT" -eq 1 ]; then
   get_mstch
   get_fizz

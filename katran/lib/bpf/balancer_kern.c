@@ -72,7 +72,7 @@ static inline bool get_packet_dst(struct real_definition **real,
   __u32 *real_pos;
   __u64 cur_time;
   __u32 hash;
-  __u32 key;
+  __u32 key=0;
 
   under_flood = is_under_flood(&cur_time);
 
@@ -177,7 +177,7 @@ static inline int process_l3_headers(struct packet_description *pckt,
   struct ipv6hdr *ip6h;
   if (is_ipv6) {
     ip6h = data + off;
-    if (ip6h + 1 > data_end) {
+    if (ip6h + 1 > (struct ipv6hdr *)data_end) {
       return XDP_DROP;
     }
 
@@ -208,7 +208,7 @@ static inline int process_l3_headers(struct packet_description *pckt,
     }
   } else {
     iph = data + off;
-    if (iph + 1 > data_end) {
+    if (iph + 1 > (struct iphdr *)data_end) {
       return XDP_DROP;
     }
     //ihl contains len of ipv4 header in 32bit words
@@ -250,6 +250,7 @@ static inline int process_l3_headers(struct packet_description *pckt,
   return FURTHER_PROCESSING;
 }
 
+#ifdef INLINE_DECAP
 __attribute__((__always_inline__))
 static inline int process_encaped_pckt(void **data, void **data_end,
                                        struct xdp_md *xdp, bool *is_ipv6,
@@ -307,7 +308,7 @@ static inline int process_encaped_pckt(void **data, void **data_end,
   }
   return FURTHER_PROCESSING;
 }
-
+#endif
 __attribute__((__always_inline__))
 static inline int process_packet(void *data, __u64 off, void *data_end,
                                  bool is_ipv6, struct xdp_md *xdp) {
@@ -318,7 +319,6 @@ static inline int process_packet(void *data, __u64 off, void *data_end,
   struct vip_definition vip = {};
   struct vip_meta *vip_info;
   struct lb_stats *data_stats;
-  __u64 iph_len;
   __u8 protocol;
 
   int action;
@@ -530,29 +530,31 @@ static inline int process_packet(void *data, __u64 off, void *data_end,
 }
 
 SEC("xdp-balancer")
-int balancer_ingress(struct xdp_md *ctx) {
-  void *data = (void *)(long)ctx->data;
-  void *data_end = (void *)(long)ctx->data_end;
-  struct eth_hdr *eth = data;
-  __u32 eth_proto;
-  __u32 nh_off;
-  nh_off = sizeof(struct eth_hdr);
+int balancer_ingress(void *ct)
+{
+	struct xdp_md *ctx = (struct xdp_md *)ct;
+	void *data = (void *)(long)ctx->data;
+	void *data_end = (void *)(long)ctx->data_end;
+	struct eth_hdr *eth = data;
+	__u32 eth_proto;
+	__u32 nh_off;
+	nh_off = sizeof(struct eth_hdr);
 
-  if (data + nh_off > data_end) {
-    // bogus packet, len less than minimum ethernet frame size
-    return XDP_DROP;
-  }
+	if (data + nh_off > data_end) {
+		// bogus packet, len less than minimum ethernet frame size
+		return XDP_DROP;
+	}
 
-  eth_proto = eth->eth_proto;
+	eth_proto = eth->eth_proto;
 
-  if (eth_proto == BE_ETH_P_IP) {
-    return process_packet(data, nh_off, data_end, false, ctx);
-  } else if (eth_proto == BE_ETH_P_IPV6) {
-    return process_packet(data, nh_off, data_end, true, ctx);
-  } else {
-    // pass to tcp/ip stack
-    return XDP_PASS;
-  }
+	if (eth_proto == BE_ETH_P_IP) {
+		return process_packet(data, nh_off, data_end, false, ctx);
+	}
+	else if (eth_proto == BE_ETH_P_IPV6) {
+		return process_packet(data, nh_off, data_end, true, ctx);
+	}
+	// pass to tcp/ip stack
+	return XDP_PASS;
 }
 
 char _license[] SEC("license") = "GPL";

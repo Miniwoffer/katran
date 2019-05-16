@@ -86,7 +86,7 @@ static inline bool parse_udp(void *data, void *data_end,
   struct udphdr *udp;
   udp = data + off;
 
-  if (udp + 1 > data_end) {
+  if (udp + 1 > (struct udphdr *)data_end) {
     return false;
   }
 
@@ -112,7 +112,7 @@ static inline bool parse_tcp(void *data, void *data_end,
   struct tcphdr *tcp;
   tcp = data + off;
 
-  if (tcp + 1 > data_end) {
+  if (tcp + 1 > (struct tcphdr *)data_end) {
     return false;
   }
 
@@ -138,7 +138,6 @@ static inline int parse_quic(void *data, void *data_end,
 
   bool is_icmp = (pckt->flags & F_ICMP);
   __u64 off = calc_offset(is_ipv6, is_icmp);
-  int flags;
   // offset points to the beginning of transport header (udp) of quic's packet
   /*                                      |QUIC PKT TYPE|           */
   if ((data + off + sizeof(struct udphdr) + sizeof(__u8)) > data_end) {
@@ -155,7 +154,7 @@ static inline int parse_quic(void *data, void *data_end,
   // concerned about the first 16 bits in Dest Conn Id
   if ((*pkt_type & QUIC_LONG_HEADER) == QUIC_LONG_HEADER) {
     // packet with long header
-    if (quic_data + sizeof(struct quic_long_header) > data_end) {
+    if (quic_data + sizeof(struct quic_long_header) > (__u8 *)data_end) {
       return FURTHER_PROCESSING;
     }
     if ((*pkt_type & QUIC_PACKET_TYPE_MASK) < QUIC_HANDSHAKE) {
@@ -173,7 +172,7 @@ static inline int parse_quic(void *data, void *data_end,
     connId = long_header->dst_connection_id;
   } else {
     // short header: just read the connId
-    if (quic_data + sizeof(struct quic_short_header) > data_end) {
+    if (quic_data + sizeof(struct quic_short_header) > (__u8 *)data_end) {
       return FURTHER_PROCESSING;
     }
     connId = ((struct quic_short_header*)quic_data)->connection_id;

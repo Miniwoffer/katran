@@ -1,5 +1,6 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.1)
 project (libkatran-proj)
+
 
 # for clang's compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -16,16 +17,32 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized -Wdeprecated-de
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-declarations")
 
 # system libs
-find_library(GLOG libglog.a glog)
-find_library(LIBELF libelf.a elf)
-find_library(LIBMNL libmnl.a mnl)
-find_library(GFLAGS libgflags.a gflags)
-find_library(GTEST gtest)
-find_library(FOLLY libfolly.a folly)
-find_library(PTHREAD pthread)
-find_library(LIBUNWIND libunwind.a unwind)
-find_library(LIBLZMA liblzma.a lzma)
-find_library(LIBZ libz.a z)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
+#find_package(GTest REQUIRED)
+#find_package(Glog REQUIRED)
+#find_package(LibElf REQUIRED)
+#find_package(LibMnl REQUIRED)
+#find_package(GFlags REQUIRED)
+#find_package(Folly REQUIRED)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+#find_package(Libunwind REQUIRED)
+#find_package(LibLZMA REQUIRED)
+
+#find_package(LibZ REQUIRED)
+
+find_library(Glog_LIBRARIES libglog.so glog)
+find_library(LibElf_LIBRARIES libelf.a elf)
+find_library(LibMnl_LIBRARIES libmnl.so mnl)
+find_library(GFlags_LIBRARIES libgflags.a gflags)
+find_library(GTest_LIBRARIES gtest)
+find_library(Folly_LIBRARIES libfolly.a folly)
+find_library(Libunwind_LIBRARIES libunwind.so unwind)
+find_library(LibLZMA_LIBRARIES liblzma.so lzma)
+find_library(LibZ_LIBRARIES libz.a z)
 find_library(LIBDC libdouble-conversion.a double-conversion)
 find_library(BPF libbpf.a PATHS ${LIBBPF_PATH} NO_DEFAULT_PATH)
 add_library(murmur3 STATIC
@@ -46,13 +63,13 @@ add_library(iphelpers STATIC
 )
 
 target_link_libraries(iphelpers
-    "${FOLLY}"
-    "${LIBUNWIND}"
-    "${LIBLZMA}"
-    "${GLOG}"
-    "${GFLAGS}"
-    "${PTHREAD}"
+	"${Folly_LIBRARIES}"
+	"${Libunwind_LIBRARIES}"
+	"${libLZMA_LIBRARIES}"
+	"${Glog_LIBRARIES}"
+	"${GFlags_LIBRARIES}"
     "${LIBDC}"
+	Threads::Threads
 )
 
 add_library(bpfadapter STATIC
@@ -66,15 +83,15 @@ add_library(bpfadapter STATIC
 )
 
 set(BPFADAPTER_DEPS
+	Threads::Threads
     "${BPF}"
-    "${LIBUNWIND}"
-    "${LIBLZMA}"
-    "${GLOG}"
-    "${PTHREAD}"
-    "${LIBELF}"
-    "${LIBZ}"
-    "${LIBMNL}"
-    "${FOLLY}"
+	"${Libunwind_LIBRARIES}"
+	"${libLZMA_LIBRARIES}"
+	"${Glog_LIBRARIES}"
+	"${LibElf_LIBRARIES}"
+	"${LibZ_LIBRARIES}"
+	"${LibMnl_LIBRARIES}"
+	"${Folly_LIBRARIES}"
     "${LIBDC}"
 )
 
@@ -92,7 +109,7 @@ target_link_libraries(katranlb
     bpfadapter
     chhelpers
     iphelpers
-    "${GFLAGS}"
+	"${GFlags_LIBARIES}"
 )
 
 add_library(mac_helpers STATIC
@@ -101,20 +118,20 @@ add_library(mac_helpers STATIC
 )
 
 target_link_libraries(mac_helpers
-    "${FOLLY}"
+	"${Folly_LIBRARIES}"
 )
 
 add_executable(xdproot xdproot.cpp)
 target_link_libraries(xdproot
     bpfadapter
-    "${GFLAGS}"
+	"${GFlags_LIBRARIES}"
 )
 
 add_executable(maglev_integration_test maglev_integration_test.cpp)
 target_link_libraries(maglev_integration_test
     chhelpers
-    "${GFLAGS}"
-    "${PTHREAD}"
+	Threads::Threads
+	"${GFlags_LIBRARIES}"
 )
 
 add_subdirectory(testing)

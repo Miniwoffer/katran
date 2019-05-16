@@ -9,7 +9,7 @@ add_library(decap STATIC
 
 target_link_libraries(decap
     bpfadapter
-    "${GLOG}"
+	"${Glog_LIBRARIES}"
 )
 
 add_subdirectory(testing)
