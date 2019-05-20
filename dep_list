@@ -38,3 +38,4 @@ libkrb5-dev
 flex
 golang
 libprotoc-dev
+libgrpc-dev

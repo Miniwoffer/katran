@@ -38,14 +38,8 @@ fi
 mkdir deps || true
 
 get_dev_tools() {
-    $INSTALER \
-		clang \
-		cmake \
-		bison \
-		flex \
-		bc \
-		bcc
-	echo lol
+	sudo apt -y update
+	sudo apt -y install $(tr '\n' ' ' < dep_list)
 }
 
 get_folly() {
@@ -295,8 +289,7 @@ test_katran() {
     ctest -v ./*
     popd
 }
-
-#get_dev_tools
+get_dev_tools
 get_folly
 #get_required_libs
 get_gtest
@@ -310,7 +303,7 @@ if [ "$BUILD_EXAMPLE_THRIFT" -eq 1 ]; then
   get_fbthrift
 fi
 if [ "$BUILD_EXAMPLE_GRPC" -eq 1 ]; then
-  get_grpc
+  #get_grpc
 fi
 if [ -z "$INSTALL_DEPS_ONLY" ]; then
   katran_oss_tests_fixup
