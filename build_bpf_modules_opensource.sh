@@ -24,10 +24,10 @@ set -xeo pipefail
 CLANG_PATH="$(pwd)/deps/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04"
 #LLC="${CLANG_PATH}/bin/llc"
 #LD_LIBRARY_PATH="${CLANG_PATH}/lib"
-INCLUDE="-I/usr/include/x86_64-linux-gnu/"
-LLC="/usr/bin/llc"
+#INCLUDE="-I/usr/include/x86_64-linux-gnu/"
+LLC="/usr/bin/llc-8"
 #CLANG="${CLANG_PATH}/bin/clang"
-CLANG="/usr/bin/clang"
+CLANG="/usr/bin/clang-8"
 rm -rf ./deps/bpfprog
 mkdir -p ./deps/bpfprog/include
 cp ./katran/lib/Makefile-bpf ./deps/bpfprog/Makefile

@@ -36,8 +36,8 @@ clean:
 	@rm -f *~
 
 $(obj)/bpf/%.o: $(src)/bpf/%.c
-	$(CLANG) $(INCLUDEFLAGS) $(EXTRA_CFLAGS) -D__x86_64__ -Wall -O2 -target bpf -c $< -o $@
-#	$(CLANG) $(INCLUDEFLAGS) $(EXTRA_CFLAGS) \
+#	$(CLANG) $(INCLUDEFLAGS) $(EXTRA_CFLAGS) -D__KERNEL__ -D__x86_64__ -Wall -O2 -target bpf -c $< -o $@
+	$(CLANG) $(INCLUDEFLAGS) $(EXTRA_CFLAGS) \
 	$(DEBUGBPF) -D__KERNEL__ -Wno-unused-value -Wno-pointer-sign \
 		-Wno-compare-distinct-pointer-types \
 		-O2 -emit-llvm -c -g $< -o -| $(LLC) -march=bpf -filetype=obj -o $@
