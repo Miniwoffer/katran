@@ -24,6 +24,7 @@ set -xeo pipefail
 CLANG_PATH="$(pwd)/deps/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04"
 #LLC="${CLANG_PATH}/bin/llc"
 #LD_LIBRARY_PATH="${CLANG_PATH}/lib"
+INCLUDE="-I/usr/include/x86_64-linux-gnu/"
 LLC="/usr/bin/llc"
 #CLANG="${CLANG_PATH}/bin/clang"
 CLANG="/usr/bin/clang"
@@ -34,6 +35,6 @@ cp -r ./katran/lib/bpf ./deps/bpfprog/
 cp -r ./katran/decap/bpf ./deps/bpfprog/
 cp ./katran/lib/linux_includes/* ./deps/bpfprog/include/
 cd ./deps/bpfprog &&  make \
-  EXTRA_CFLAGS="$*" \
+  EXTRA_CFLAGS="$* $INCLUDE" \
   LLC="${LLC}" CLANG="${CLANG}"
 echo "BPF BUILD COMPLITED"

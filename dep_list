@@ -1,4 +1,5 @@
 build-essential
+clang
 automake
 autoconf-archive
 libtool
@@ -36,3 +37,4 @@ libsodium-dev
 libkrb5-dev
 flex
 golang
+libprotoc-dev

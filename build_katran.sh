@@ -16,7 +16,7 @@
  # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 set -xeo pipefail
-INSTALER="yay -Sy --noconfirm --needed "
+INSTALER="sudo apt install -y"
 NCPUS=$(cat /proc/cpuinfo  | grep processor | wc -l)
 ROOT_DIR=$(pwd)
 DEPS_DIR="${ROOT_DIR}/deps"
@@ -49,34 +49,11 @@ get_dev_tools() {
 }
 
 get_folly() {
+	UBUNTU_INS=" build-essential "
     if [ -f "deps/folly_installed" ]; then
         return
     fi
     rm -rf deps/folly
-	$INSTALER \
-		gcc \
-		automake \
-		autoconf \
-		autoconf-archive \
-		libtool \
-		boost \
-		libevent \
-		double-conversion \
-		google-glog \
-		gflags \
-		lz4 \
-		lzma \
-		snappy \
-		make \
-		zlib \
-		binutils \
-		jemalloc \
-		openssl \
-		pkg-config \
-		libunwind \
-		libdwarf
-#
-#		libiberty \
     pushd .
 	cd deps
 	git clone https://github.com/facebook/folly --depth 1
@@ -319,11 +296,11 @@ test_katran() {
     popd
 }
 
-get_dev_tools
-# get_folly
-get_required_libs
-#get_gtest
-#get_libbpf
+#get_dev_tools
+get_folly
+#get_required_libs
+get_gtest
+get_libbpf
 if [ "$BUILD_EXAMPLE_THRIFT" -eq 1 ]; then
   get_mstch
   get_fizz
