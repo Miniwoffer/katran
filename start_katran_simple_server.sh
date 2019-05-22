@@ -16,7 +16,7 @@
  # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # this script will start simple_katran_server w/ xdproot
-set -xeo pipefail
-INTERFACE="enp0s3"
+#set -xeo pipefail
+INTERFACE="eth0"
 ./install_xdproot.sh
 sudo sh -c "./build/example/simple_katran_server -balancer_prog=./deps/bpfprog/bpf/balancer_kern.o -intf=${INTERFACE} -hc_forwarding=false -map_path=/sys/fs/bpf/jmp_${INTERFACE} -prog_pos=2"

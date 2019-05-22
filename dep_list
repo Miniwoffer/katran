@@ -30,7 +30,6 @@ libbpfcc-dev
 libgoogle-glog-dev
 libgflags-dev
 libelf-dev
-libmnl-dev
 liblzma-dev
 libre2-dev
 libsodium-dev

@@ -17,6 +17,6 @@
 
 # this script will start simple_katran_server w/ xdproot
 set -xeo pipefail
-INTERFACE="enp0s3"
+INTERFACE="eth0"
 ./install_xdproot.sh
 sudo sh -c "./build/example_grpc/katran_server_grpc -balancer_prog=./deps/bpfprog/bpf/balancer_kern.o -intf=${INTERFACE} -hc_forwarding=false -map_path=/sys/fs/bpf/jmp_${INTERFACE} -prog_pos=2"
