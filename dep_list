@@ -37,5 +37,6 @@ libsodium-dev
 libkrb5-dev
 flex
 golang
+golang-protobuf-extensions-dev
 libprotoc-dev
 libgrpc-dev

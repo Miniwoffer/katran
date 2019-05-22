@@ -17,7 +17,7 @@ add_library(pcap_writer
 )
 
 target_link_libraries(pcap_writer
-  "${Folly_LIBRARIES}"
+	"${FOLLY_LIBRARIES}"
 )
 
 add_library(xdp_event_logger
@@ -29,8 +29,8 @@ add_library(xdp_event_logger
 
 target_link_libraries(xdp_event_logger
   pcap_writer
-  "${Folly_LIBRARIES}"
-  "${Glog_LIBRARIES}"
+  "${FOLLY_LIBRARIES}"
+  "${GLOG_LIBRARIES}"
 )
 
 add_library(lxdpdump
@@ -41,11 +41,11 @@ add_library(lxdpdump
 
 target_link_libraries(lxdpdump
   xdp_event_logger
-  "${LibElf_LIBRARvES}"
-  "${LibZ_LIBRARIES}"
+  "${LIBELF_LIBRARIES}"
+  "${ZLIB_LIBRARIES}"
   "${LIBBCC}"
-  "${Folly_LIBRARIES}"
-  "${Glog_LIBRARIES}"
+  "${FOLLY_LIBRARIES}"
+  "${GLOG_LIBRARIES}"
 )
 
 add_executable(xdpdump xdpdump_tool.cpp)
@@ -53,9 +53,9 @@ target_link_libraries(xdpdump
   "-Wl,--start-group"
   "${Libunwind_LIBRARIES}"
   "${LIBLZMA}"
-  "${Folly_LIBRARIES}"
-  "${Glog_LIBRARIES}"
-  "${GFlags_LIBRARIES}"
+  "${FOLLY_LIBRARIES}"
+  "${GLOG_LIBRARIES}"
+  "${GFLAGS_LIBRARIES}"
   "${Threads_LIBRARIES}"
   "${LIBDC}"
   "${DL}"

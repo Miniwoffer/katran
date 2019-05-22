@@ -8,9 +8,9 @@ add_library(base64_helpers STATIC
 )
 
 target_link_libraries(base64_helpers
-    "${Glog_LIBRARIES}"
-    "${GFlags_LIBRARIES}"
-    "${Folly_LIBRARIES}"
+	"${GLOG_LIBRARIES}"
+	"${GFLAGS_LIBRARIES}"
+	"${FOLLY_LIBRARIES}"
     "${BOOST_SYSTEM}"
 )
 
@@ -23,8 +23,8 @@ add_library(pcap_parser STATIC
 target_link_libraries(pcap_parser
     base64_helpers	
     Threads::Threads
-    "${Folly_LIBRARIES}"
-    "${Glog_LIBRARIES}"
+    "${FOLLY_LIBRARIES}"
+    "${GLOG_LIBRARIES}"
     "${BOOST_SYSTEM}"
 )
 
@@ -36,8 +36,8 @@ add_library(xdptester STATIC
 )
 
 target_link_libraries(xdptester
-    "${Folly_LIBRARIES}"
-    "${Glog_LIBRARIES}"
+	"${FOLLY_LIBRARIES}"
+	"${GLOG_LIBRARIES}"
     Threads::Threads
     pcap_parser
     bpfadapter
@@ -46,7 +46,7 @@ target_link_libraries(xdptester
 add_executable(katran_tester katran_tester.cpp)
 
 target_link_libraries(katran_tester
-    "${GFlags_LIBRARIES}"
+	"${GFLAGS_LIBRARIES}"
     Threads::Threads
     xdptester
     katranlb
@@ -56,11 +56,11 @@ enable_testing()
 
 add_executable(base64helpers-tests Base64Test.cpp)
 target_link_libraries(base64helpers-tests	
-	"${GTest_LIBRARIES}"
-    "${Glog_LIBRARIES}"
-    "${GFlags_LIBRARIES}"
+	"${GTEST_LIBRARIES}"
+	"${GLOG_LIBRARIES}"
+	"${GFLAGS_LIBRARIES}"
     "${Libunwind_LIBRARIES}"
-    "${LibLZMA_LIBRARIES}"
+    "${LIBLZMA_LIBRARIES}"
 	Threads::Threads
     base64_helpers
 )

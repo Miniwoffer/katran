@@ -20,29 +20,31 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-declarations")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
-#find_package(GTest REQUIRED)
-#find_package(Glog REQUIRED)
-#find_package(LibElf REQUIRED)
+find_package(GTest REQUIRED)
+
+find_package(Glog REQUIRED)
+find_package(LibElf REQUIRED)
 #find_package(LibMnl REQUIRED)
-#find_package(GFlags REQUIRED)
-#find_package(Folly REQUIRED)
+find_package(GFlags REQUIRED)
+find_package(Folly REQUIRED)
+#message("${FOLLY_LIBRARIES}")
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 #find_package(Libunwind REQUIRED)
-#find_package(LibLZMA REQUIRED)
+find_package(LibLZMA REQUIRED)
 
-#find_package(LibZ REQUIRED)
+find_package(ZLIB REQUIRED)
 
-find_library(Glog_LIBRARIES libglog.so glog)
-find_library(LibElf_LIBRARIES libelf.a elf)
+#find_library(GLOG_LIBRARIES libglog.so glog)
+#find_library(LIBELF_LIBRARIES libelf.a elf)
 find_library(LibMnl_LIBRARIES libmnl.so mnl)
-find_library(GFlags_LIBRARIES libgflags.a gflags)
-find_library(GTest_LIBRARIES gtest)
-find_library(Folly_LIBRARIES libfolly.a folly)
-find_library(Libunwind_LIBRARIES libunwind.so unwind)
-find_library(LibLZMA_LIBRARIES liblzma.so lzma)
-find_library(LibZ_LIBRARIES libz.a z)
+#find_library(GFLAGS_LIBRARIES libgflags.a gflags)
+#find_library(GTest_LIBRARIES gtest)
+#find_library(FOLLY_LIBRARIES libfolly.a folly)
+#find_library(Libunwind_LIBRARIES libunwind.so unwind)
+#find_library(LibLZMA_LIBRARIES liblzma.so lzma)
+#find_library(LibZ_LIBRARIES libz.a z)
 find_library(LIBDC libdouble-conversion.a double-conversion)
 find_library(BPF libbpf.a PATHS ${LIBBPF_PATH} NO_DEFAULT_PATH)
 add_library(murmur3 STATIC
@@ -63,12 +65,12 @@ add_library(iphelpers STATIC
 )
 
 target_link_libraries(iphelpers
-	"${Folly_LIBRARIES}"
+	"${FOLLY_LIBRARIES}"
 	"${Libunwind_LIBRARIES}"
-	"${libLZMA_LIBRARIES}"
-	"${Glog_LIBRARIES}"
-	"${GFlags_LIBRARIES}"
-    "${LIBDC}"
+	"${LIBLZMA_LIBRARIES}"
+	"${GLOG_LIBRARIES}"
+	"${GFLAGS_LIBRARIES}"
+    	"${LIBDC}"
 	Threads::Threads
 )
 
@@ -86,12 +88,12 @@ set(BPFADAPTER_DEPS
 	Threads::Threads
     "${BPF}"
 	"${Libunwind_LIBRARIES}"
-	"${libLZMA_LIBRARIES}"
-	"${Glog_LIBRARIES}"
-	"${LibElf_LIBRARIES}"
-	"${LibZ_LIBRARIES}"
+	"${LIBLZMA_LIBRARIES}"
+	"${GLOG_LIBRARIES}"
+	"${LIBELF_LIBRARIES}"
+	"${ZLIB_LIBRARIES}"
 	"${LibMnl_LIBRARIES}"
-	"${Folly_LIBRARIES}"
+	"${FOLLY_LIBRARIES}"
     "${LIBDC}"
 )
 
@@ -109,7 +111,7 @@ target_link_libraries(katranlb
     bpfadapter
     chhelpers
     iphelpers
-	"${GFlags_LIBARIES}"
+	"${GFLAGS_LIBARIES}"
 )
 
 add_library(mac_helpers STATIC
@@ -118,20 +120,20 @@ add_library(mac_helpers STATIC
 )
 
 target_link_libraries(mac_helpers
-	"${Folly_LIBRARIES}"
+	"${FOLLY_LIBRARIES}"
 )
 
 add_executable(xdproot xdproot.cpp)
 target_link_libraries(xdproot
     bpfadapter
-	"${GFlags_LIBRARIES}"
+	"${GFLAGS_LIBRARIES}"
 )
 
 add_executable(maglev_integration_test maglev_integration_test.cpp)
 target_link_libraries(maglev_integration_test
     chhelpers
 	Threads::Threads
-	"${GFlags_LIBRARIES}"
+	"${GFLAGS_LIBRARIES}"
 )
 
 add_subdirectory(testing)

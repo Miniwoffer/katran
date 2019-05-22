@@ -303,9 +303,10 @@ if [ "$BUILD_EXAMPLE_THRIFT" -eq 1 ]; then
   get_fbthrift
 fi
 if [ "$BUILD_EXAMPLE_GRPC" -eq 1 ]; then
-  #get_grpc
+  get_grpc
 fi
 if [ -z "$INSTALL_DEPS_ONLY" ]; then
+  sudo ldconfig
   katran_oss_tests_fixup
   build_katran
   test_katran
